@@ -137,3 +137,15 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# ── Tauri / Rust ─────────────────────────────────────────────────────────────
+src-tauri/target/
+src-tauri/WixTools/
+
+# Build output
+dist/
+
+# Environment (contains secrets — copy .env.example instead)
+.env
+.env.local
+.env.*.local

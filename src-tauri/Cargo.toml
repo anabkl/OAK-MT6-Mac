@@ -1,0 +1,65 @@
+[package]
+name = "lahra-mt6-pro"
+version = "0.1.0"
+description = "Lahra-MT6-Pro — next-generation macOS trading terminal"
+authors = ["Anas Lahraoui", "Othman Karam"]
+edition = "2021"
+rust-version = "1.77"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary to make the Library
+# crate use a different file name from the binary (main.rs vs lib.rs).
+name = "lahra_mt6_pro_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "lahra-mt6-pro"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "1", features = [] }
+
+[dependencies]
+# ── Tauri ──────────────────────────────────────────────────────────────────
+tauri = { version = "1", features = [
+    "shell-open",
+    "window-all",
+    "system-tray",
+] }
+
+# ── Async runtime ──────────────────────────────────────────────────────────
+tokio = { version = "1", features = ["full"] }
+
+# ── HTTP client (to call Python Brain & Java Executor) ────────────────────
+reqwest = { version = "0.11", features = ["json", "rustls-tls"], default-features = false }
+
+# ── Serialisation ──────────────────────────────────────────────────────────
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# ── Error handling ─────────────────────────────────────────────────────────
+thiserror = "1"
+anyhow = "1"
+
+# ── Logging ────────────────────────────────────────────────────────────────
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# ── Keychain / credential storage (macOS Keychain via Security framework) ──
+keyring = "2"
+
+[features]
+# by default Tauri runs in production mode
+# when `tauri dev` runs it is executed with `cargo run --no-default-features`
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+# Smaller binary, better security (no debug symbols in releases)
+strip = true
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
